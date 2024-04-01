@@ -16,7 +16,6 @@
                "!" DELIMITED BY SIZE
                INTO WS-OUTPUT
            DISPLAY WS-OUTPUT
-           CALL "SYSTEM" USING "echo 'Hallo'"
-           CALL "SYSTEM" USING "pwd"
+           CALL "SYSTEM" USING "python scripts/mysword.py --list"
            CONTINUE.
        SEARCHENGINE-EXIT.
