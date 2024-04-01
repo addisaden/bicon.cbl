@@ -1,2 +1,5 @@
 *.bin
 *.out
+*.tmp
+*.pyc
+*.pyo
