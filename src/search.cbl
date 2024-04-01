@@ -8,6 +8,7 @@
        01 WS-OUTPUT         PIC X(100) VALUE SPACE.
        PROCEDURE DIVISION.
        SEARCHENGINE.
+           CALL "SYSTEM" USING "clear"
            DISPLAY "Wie ist dein Name? " WITH NO ADVANCING.
            ACCEPT WS-USERNAME
            STRING "Hallo, " DELIMITED BY SIZE
@@ -15,6 +16,6 @@
                "!" DELIMITED BY SIZE
                INTO WS-OUTPUT
            DISPLAY WS-OUTPUT
-
+           CALL "SYSTEM" USING "echo 'Hallo'"
            CONTINUE.
        SEARCHENGINE-EXIT.
