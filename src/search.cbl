@@ -17,5 +17,6 @@
                INTO WS-OUTPUT
            DISPLAY WS-OUTPUT
            CALL "SYSTEM" USING "echo 'Hallo'"
+           CALL "SYSTEM" USING "pwd"
            CONTINUE.
        SEARCHENGINE-EXIT.
