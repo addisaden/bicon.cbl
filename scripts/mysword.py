@@ -22,7 +22,7 @@ def main():
             with open(tmp_list_file, "w") as f:
                 f.write(html_data)
         for bible in bibles:
-            print(f"{bible['language']}###{bible['title']}")
+            print(f"{bible['language']}###{bible['title']}###{bible['url']}###{bible['filename']}")
 
 
 if __name__ == "__main__":
