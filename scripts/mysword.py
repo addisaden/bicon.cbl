@@ -12,6 +12,12 @@ def main():
     
     if args.download:
         print("Downloading Bible...")
+        filename = args.download[0]
+        print(filename)
+        if file_exists(tmp_list_file):
+            with open(tmp_list_file, "r") as f:
+                html_data = f.read()
+        bibles, html_data = MySwordAPI.get_mysword_bibles(html_data)
     elif args.list:
         html_data = None
         if file_exists(tmp_list_file):
