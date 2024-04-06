@@ -36,7 +36,6 @@ def main():
 
     elif args.download:
         selected_bible = args.download[0].lower()
-        print(selected_bible)
 
         bibles = get_mysword_bibles()
 

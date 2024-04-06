@@ -26,6 +26,11 @@
        01 WS-RECORD-TITLE    PIC X(250).
        01 WS-RECORD-URL      PIC X(250).
        01 WS-RECORD-FILENAME PIC X(100).
+       01 WS-SELECTED-LANGUAGE PIC X(50).
+       01 WS-SELECTED-TITLE    PIC X(250).
+       01 WS-SELECTED-URL      PIC X(250).
+       01 WS-SELECTED-FILENAME PIC X(100).
+       01 WS-META-FILE         PIC X(100).
        PROCEDURE DIVISION.
        SEARCHENGINE.
            CALL "SYSTEM" USING "clear"
@@ -52,7 +57,12 @@
                    WHEN WS-INPUT = 02
                        DISPLAY "NOT IMPLEMENTED YET"
                    WHEN WS-INPUT = 03
-                       PERFORM LISTTRANSLATIONS
+                       CALL "importTranslation" USING
+                         WS-SELECTED-LANGUAGE,
+                         WS-SELECTED-TITLE,
+                         WS-SELECTED-URL,
+                         WS-SELECTED-FILENAME,
+                         WS-META-FILE
                    WHEN TRUE
                        DISPLAY "??"
                        DISPLAY WS-INPUT
@@ -62,75 +72,3 @@
        SEARCHENGINE-EXIT.
            STOP RUN.
 
-       LISTTRANSLATIONS.
-           CALL "SYSTEM"
-             USING "python scripts/mysword.py -l > translations.tmp"
-
-           SET WS-STATE-LIST-LANGUAGES TO TRUE
-           PERFORM RUNLISTTRANSLATIONS
-
-           DISPLAY SPACE
-           DISPLAY "Waehle Sprache: " WITH NO ADVANCING
-           ACCEPT WS-STRING-INPUT
-
-           SET WS-STATE-LIST-TRANSLATIONS TO TRUE
-           PERFORM RUNLISTTRANSLATIONS
-
-           DISPLAY SPACE
-           DISPLAY "Waehle Uebersetzung: " WITH NO ADVANCING
-           ACCEPT WS-STRING-INPUT
-
-           SET WS-STATE-SHOW-DETAILS TO TRUE
-           PERFORM RUNLISTTRANSLATIONS
-
-           CONTINUE.
-       LISTTRANSLATINOS-EXIT.
-
-       RUNLISTTRANSLATIONS.
-           DISPLAY SPACE
-           DISPLAY SPACE
-           DISPLAY SPACE
-           OPEN INPUT BIBLETRANSLATIONS
-           MOVE "N" TO WS-FILE-EOF
-           PERFORM UNTIL WS-FILE-EOF = "Y"
-             READ BibleTranslations
-               AT END MOVE "Y" TO WS-FILE-EOF
-               NOT AT END
-                 UNSTRING BIBLETRANSLATIONRECORD
-                   DELIMITED BY "###" INTO
-                       WS-RECORD-LANGUAGE
-                       WS-RECORD-TITLE
-                       WS-RECORD-URL
-                       WS-RECORD-FILENAME
-                   IF WS-STATE-LIST-LANGUAGES
-                     IF WS-RECORD-LANGUAGE NOT = WS-LAST-LANGUAGE
-                        DISPLAY WS-RECORD-LANGUAGE
-                     END-IF
-                     MOVE WS-RECORD-LANGUAGE TO WS-LAST-LANGUAGE
-                   END-IF
-
-                   IF WS-STATE-LIST-TRANSLATIONS
-                     IF WS-RECORD-LANGUAGE = WS-STRING-INPUT
-                       UNSTRING WS-RECORD-FILENAME
-                         DELIMITED BY "." INTO
-                           WS-OUTPUT
-                       DISPLAY FUNCTION trim(WS-OUTPUT)
-                       DISPLAY FUNCTION trim(WS-RECORD-TITLE)
-                     END-IF
-                   END-IF
-
-                   IF WS-STATE-SHOW-DETAILS
-                     UNSTRING WS-RECORD-FILENAME
-                       DELIMITED BY "." INTO
-                         WS-OUTPUT
-                     IF WS-OUTPUT = WS-STRING-INPUT
-                       DISPLAY FUNCTION trim(WS-RECORD-LANGUAGE)
-                       DISPLAY FUNCTION trim(WS-RECORD-TITLE)
-                       DISPLAY FUNCTION trim(WS-RECORD-URL)
-                       DISPLAY FUNCTION trim(WS-RECORD-FILENAME)
-                     END-IF
-                   END-IF
-           END-PERFORM
-           CLOSE BIBLETRANSLATIONS
-           CONTINUE.
-       RUNLISTTRANSLATIONS-EXIT.
