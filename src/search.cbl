@@ -57,7 +57,7 @@
                    WHEN WS-INPUT = 02
                        DISPLAY "NOT IMPLEMENTED YET"
                    WHEN WS-INPUT = 03
-                       CALL "importTranslation" USING
+                       CALL "lib/importTranslation" USING
                          WS-SELECTED-LANGUAGE,
                          WS-SELECTED-TITLE,
                          WS-SELECTED-URL,
