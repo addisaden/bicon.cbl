@@ -84,6 +84,9 @@
            PERFORM GETDATABASEPATH
            DISPLAY "DATABASE-PATH: " WS-DATABASE-PATH
 
+           CALL "lib/sqliteToDatafile"
+             USING WS-SELECTED-FILENAME, WS-DATABASE-PATH.
+
            CONTINUE.
        LISTTRANSLATINOS-EXIT.
 
