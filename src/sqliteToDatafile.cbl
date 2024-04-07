@@ -3,15 +3,29 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT BIBLE-TEXT-FILE ASSIGN TO WS-TRANSLATION-NAME
+           SELECT BIBLE-TEXT-FILE ASSIGN TO WS-TRANSLATION-NAME-TXT
              ORGANIZATION IS LINE SEQUENTIAL
              ACCESS MODE IS SEQUENTIAL.
+           SELECT BIBLE-DATA-FILE ASSIGN TO WS-TRANSLATION-NAME-DATA
+             ORGANIZATION IS INDEXED
+             ACCESS MODE IS RANDOM
+             RECORD KEY IS BIBLE-DATA-ID.
        DATA DIVISION.
        FILE SECTION.
        FD BIBLE-TEXT-FILE.
        01 BIBLE-TEXT-RECORD         PIC X(777).
+       FD BIBLE-DATA-FILE.
+       01 BIBLE-DATA-RECORD.
+           05 BIBLE-DATA-ID.
+               10 BIBLE-DATA-BOOK    PIC 9(3).
+               10 BIBLE-DATA-CHAPTER PIC 9(3).
+               10 BIBLE-DATA-VERSE   PIC 9(3).
+           05 BIBLE-DATA-TEXT        PIC X(500).
+           88 BIBLE-DATA-EOF         VALUE HIGH-VALUE.
        WORKING-STORAGE SECTION.
        01 WS-TRANSLATION-NAME       PIC X(250).
+       01 WS-TRANSLATION-NAME-TXT   PIC X(250).
+       01 WS-TRANSLATION-NAME-DATA  PIC X(250).
        01 WS-COMMAND                PIC X(250).
        01 WS-BIBLE-TEXT-EOF         PIC X VALUE "N".
        01 WS-BIBLE-TEXT-LANGUAGE    PIC X(50).
@@ -29,16 +43,23 @@
        SQLITETODATAFILE.
            UNSTRING SQLITE-DB-FILENAME
              DELIMITED BY "." INTO WS-TRANSLATION-NAME.
+
            MOVE FUNCTION concatenate(
              FUNCTION trim(WS-TRANSLATION-NAME),
              ".txt.tmp"
-           ) TO WS-TRANSLATION-NAME
+           ) TO WS-TRANSLATION-NAME-TXT
+
+           MOVE FUNCTION concatenate(
+             FUNCTION trim(WS-TRANSLATION-NAME),
+             ".data.tmp"
+           ) TO WS-TRANSLATION-NAME-DATA
+
            CALL "SYSTEM"
              USING FUNCTION concatenate(
                 "python scripts/mysword.py -p ",
                 SQLITE-DB-FILEPATH,
                 " > ",
-                WS-TRANSLATION-NAME
+                WS-TRANSLATION-NAME-TXT
            )
            PERFORM RUNBIBLETEXTFILE
            EXIT PROGRAM.
@@ -52,18 +73,23 @@
                    AT END
                        MOVE "Y" TO WS-BIBLE-TEXT-EOF
                    NOT AT END
-                       UNSTRING BIBLE-TEXT-RECORD
-                           DELIMITED BY "###" INTO
-                             WS-BIBLE-TEXT-LANGUAGE,
-                             WS-BIBLE-TEXT-TRANSLATION,
-                             WS-BIBLE-TEXT-BOOK,
-                             WS-BIBLE-TEXT-CHAPTER,
-                             WS-BIBLE-TEXT-VERSE,
-                             WS-BIBLE-TEXT-TEXT
-                       DISPLAY WS-BIBLE-TEXT-BOOK
-                       DISPLAY WS-BIBLE-TEXT-CHAPTER
-                       DISPLAY WS-BIBLE-TEXT-VERSE
+                       PERFORM ROWBIBLETEXTFILE
            END-PERFORM
            CLOSE BIBLE-TEXT-FILE
            CONTINUE.
        RUNBIBLETEXTFILE-EXIT.
+
+       ROWBIBLETEXTFILE.
+           UNSTRING BIBLE-TEXT-RECORD
+               DELIMITED BY "###" INTO
+                 WS-BIBLE-TEXT-LANGUAGE,
+                 WS-BIBLE-TEXT-TRANSLATION,
+                 WS-BIBLE-TEXT-BOOK,
+                 WS-BIBLE-TEXT-CHAPTER,
+                 WS-BIBLE-TEXT-VERSE,
+                 WS-BIBLE-TEXT-TEXT
+           DISPLAY WS-BIBLE-TEXT-BOOK
+           DISPLAY WS-BIBLE-TEXT-CHAPTER
+           DISPLAY WS-BIBLE-TEXT-VERSE
+           CONTINUE.
+       ROWBIBLETEXTFILE-EXIT.
