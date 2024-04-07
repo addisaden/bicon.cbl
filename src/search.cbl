@@ -15,7 +15,6 @@
        01 WS-SELECTED-TITLE    PIC X(250).
        01 WS-SELECTED-URL      PIC X(250).
        01 WS-SELECTED-FILENAME PIC X(100).
-       01 WS-META-FILE         PIC X(100).
        PROCEDURE DIVISION.
        SEARCHENGINE.
            CALL "SYSTEM" USING "clear"
@@ -47,7 +46,6 @@
                          WS-SELECTED-TITLE,
                          WS-SELECTED-URL,
                          WS-SELECTED-FILENAME,
-                         WS-META-FILE
                    WHEN TRUE
                        DISPLAY "??"
                        DISPLAY WS-INPUT

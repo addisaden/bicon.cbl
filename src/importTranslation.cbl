@@ -6,10 +6,15 @@
            SELECT BibleTranslations ASSIGN TO "translations.tmp"
                ORGANIZATION IS LINE SEQUENTIAL
                ACCESS MODE IS SEQUENTIAL.
+           SELECT MetaFile ASSIGN TO WS-META-FILE
+               ORGANIZATION IS LINE SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
        DATA DIVISION.
        FILE SECTION.
        FD BibleTranslations.
-       01 BibleTranslationRecord PIC X(700).
+       01 BibleTranslationRecord PIC X(777).
+       FD MetaFile.
+       01 MetaFileRecord PIC X(777).
        WORKING-STORAGE SECTION.
        01 WS-STATE           PIC 99 VALUE 0.
          88 WS-STATE-LIST-LANGUAGES VALUE 1.
@@ -25,20 +30,22 @@
        01 WS-RECORD-TITLE    PIC X(250).
        01 WS-RECORD-URL      PIC X(250).
        01 WS-RECORD-FILENAME PIC X(100).
+       01 WS-META-FILE       PIC X(100).
+       01 WS-DATABASE-PATH   PIC X(250).
        LINKAGE SECTION.
        01 WS-SELECTED-LANGUAGE PIC X(50).
        01 WS-SELECTED-TITLE    PIC X(250).
        01 WS-SELECTED-URL      PIC X(250).
        01 WS-SELECTED-FILENAME PIC X(100).
-       01 WS-META-FILE         PIC X(100).
          
        PROCEDURE DIVISION USING
          WS-SELECTED-LANGUAGE,
          WS-SELECTED-TITLE,
          WS-SELECTED-URL,
-         WS-SELECTED-FILENAME,
-         WS-META-FILE.
+         WS-SELECTED-FILENAME.
        IMPORTTRANSLATIONS.
+           MOVE "translation.meta.tmp" TO WS-META-FILE
+
            PERFORM LISTTRANSLATIONS
            EXIT PROGRAM.
        IMPORTTRANSLATIONS-EXIT.
@@ -69,12 +76,13 @@
              USING FUNCTION concatenate(
                'python scripts/mysword.py -d ',
                WS-SELECTED-FILENAME,
-               " > translation.meta.tmp"
+               " > ",
+               WS-META-FILE
              )
             
-            MOVE "translation.meta.tmp" TO WS-META-FILE
-
-            DISPLAY "META-FILE: " WS-META-FILE
+           DISPLAY "META-FILE: " WS-META-FILE
+           PERFORM GETDATABASEPATH
+           DISPLAY "DATABASE-PATH: " WS-DATABASE-PATH
 
            CONTINUE.
        LISTTRANSLATINOS-EXIT.
@@ -131,3 +139,22 @@
            CLOSE BIBLETRANSLATIONS
            CONTINUE.
        RUNLISTTRANSLATIONS-EXIT.
+
+       GETDATABASEPATH.
+           OPEN INPUT MetaFile
+           MOVE "N" TO WS-FILE-EOF
+           PERFORM UNTIL WS-FILE-EOF = "Y"
+               READ MetaFile
+                   AT END MOVE "Y" TO WS-FILE-EOF
+                   NOT AT END
+                       UNSTRING MetaFileRecord
+                           DELIMITED BY "###" INTO
+                               WS-RECORD-LANGUAGE
+                               WS-RECORD-TITLE
+                               WS-RECORD-URL
+                               WS-RECORD-FILENAME
+                               WS-DATABASE-PATH
+           END-PERFORM
+           CLOSE MetaFile
+           CONTINUE.
+       GETDATABASEPATH-EXIT.
