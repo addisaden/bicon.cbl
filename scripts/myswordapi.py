@@ -3,6 +3,7 @@ import bs4
 import urllib3
 import subprocess
 import sqlite3
+import os.path
 
 class MySwordAPI:
     @staticmethod
@@ -49,33 +50,34 @@ class MySwordAPI:
     
     @staticmethod
     def download_mysword_bible(url, filename):
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open("/tmp/" + filename, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-        if filename.find(".gz") != -1:
-            unzip_feedback = subprocess.run(["gunzip", "/tmp/" + filename])
-            if unzip_feedback.returncode != 0:
-                return "/tmp/" + filename
-            else:
-                return "/tmp/" + filename[:-3]
-        elif filename.find(".zip") != -1:
-            filename_list = subprocess.run(["zip", "-sf", "/tmp/" + filename], capture_output=True, text=True)
-            unzip_feedback = subprocess.run(["unzip", "-o", "/tmp/" + filename, "-d", "/tmp/"])
-            if unzip_feedback.returncode != 0:
-                return "/tmp/" + filename
-            else:
-                for line in filename_list.stdout.split("\n"):
-                    if line.find("Archive") != -1:
-                        continue
-                    if line.find("Name") != -1:
-                        continue
-                    if line.find("----") != -1:
-                        continue
-                    if line.find(".bbl.mybible") != -1:
-                        return "/tmp/" + line.strip()
-                return "/tmp/" + filename[:-4]
+        if not (os.path.exists("/tmp/" + filename) or os.path.exists("/tmp/" + filename[:-3]) or os.path.exists("/tmp/" + filename[:-4])):
+            with requests.get(url, stream=True) as r:
+                r.raise_for_status()
+                with open("/tmp/" + filename, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        f.write(chunk)
+            if filename.find(".gz") != -1:
+                unzip_feedback = subprocess.run(["gunzip", "/tmp/" + filename])
+                if unzip_feedback.returncode != 0:
+                    return "/tmp/" + filename
+                else:
+                    return "/tmp/" + filename[:-3]
+            elif filename.find(".zip") != -1:
+                filename_list = subprocess.run(["zip", "-sf", "/tmp/" + filename], capture_output=True, text=True)
+                unzip_feedback = subprocess.run(["unzip", "-o", "/tmp/" + filename, "-d", "/tmp/"])
+                if unzip_feedback.returncode != 0:
+                    return "/tmp/" + filename
+                else:
+                    for line in filename_list.stdout.split("\n"):
+                        if line.find("Archive") != -1:
+                            continue
+                        if line.find("Name") != -1:
+                            continue
+                        if line.find("----") != -1:
+                            continue
+                        if line.find(".bbl.mybible") != -1:
+                            return "/tmp/" + line.strip()
+                    return "/tmp/" + filename[:-4]
         return "/tmp/" + filename
     
     @staticmethod

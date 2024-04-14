@@ -18,6 +18,7 @@
        FILE SECTION.
        FD BIBLE-TEXT-FILE.
        01 BIBLE-TEXT-RECORD         PIC X(777).
+           88 BIBLE-TEXT-EOF        VALUE HIGH-VALUE.
        FD BIBLE-DATA-META.
        01 BIBLE-DATA-META-RECORD.
            05 BIBLE-DATA-META-KEY    PIC X(12).
@@ -31,6 +32,7 @@
            05 BIBLE-DATA-TEXT        PIC X(500).
            88 BIBLE-DATA-EOF         VALUE HIGH-VALUE.
        WORKING-STORAGE SECTION.
+       01 WS-BIBLE-META-WRITTEN     PIC X VALUE "N".
        01 WS-TRANSLATION-NAME       PIC X(250).
        01 WS-TRANSLATION-NAME-TXT   PIC X(250).
        01 WS-TRANSLATION-NAME-DATA  PIC X(250).
@@ -59,28 +61,60 @@
 
            MOVE FUNCTION concatenate(
              FUNCTION trim(WS-TRANSLATION-NAME),
-             ".meta.tmp"
+             ".bible.meta"
            ) TO WS-TRANSLATION-NAME-META
 
            MOVE FUNCTION concatenate(
              FUNCTION trim(WS-TRANSLATION-NAME),
-             ".data.tmp"
+             ".bible.data"
            ) TO WS-TRANSLATION-NAME-DATA
 
-           CALL "SYSTEM"
-             USING FUNCTION concatenate(
-                "python scripts/mysword.py -p ",
-                SQLITE-DB-FILEPATH,
-                " > ",
-                WS-TRANSLATION-NAME-TXT
-           )
+           OPEN INPUT BIBLE-TEXT-FILE
+           IF NOT BIBLE-TEXT-EOF
+             DISPLAY "NO DOWNLOAD NEEDED"
+             CLOSE BIBLE-TEXT-FILE
+           ELSE
+             CLOSE BIBLE-TEXT-FILE
+             CALL "SYSTEM"
+               USING FUNCTION concatenate(
+                   "python scripts/mysword.py -p ",
+                   SQLITE-DB-FILEPATH,
+                   " > ",
+                   WS-TRANSLATION-NAME-TXT
+             )
+           END-IF
+
+           OPEN OUTPUT BIBLE-DATA-META
+           OPEN OUTPUT BIBLE-DATA-FILE
+           OPEN INPUT BIBLE-TEXT-FILE
+
+           MOVE "SHORT" TO BIBLE-DATA-META-KEY
+           MOVE WS-TRANSLATION-NAME TO BIBLE-DATA-META-VALUE
+           WRITE BIBLE-DATA-META-RECORD
+           
+           MOVE "TXT-FILE" TO BIBLE-DATA-META-KEY
+           MOVE WS-TRANSLATION-NAME-TXT TO BIBLE-DATA-META-VALUE
+           WRITE BIBLE-DATA-META-RECORD
+           
+           MOVE "META-FILE" TO BIBLE-DATA-META-KEY
+           MOVE WS-TRANSLATION-NAME-META TO BIBLE-DATA-META-VALUE
+           WRITE BIBLE-DATA-META-RECORD
+           
+           MOVE "DATA-FILE" TO BIBLE-DATA-META-KEY
+           MOVE WS-TRANSLATION-NAME-DATA TO BIBLE-DATA-META-VALUE
+           WRITE BIBLE-DATA-META-RECORD
+
            PERFORM RUNBIBLETEXTFILE
+
+           CLOSE BIBLE-TEXT-FILE
+           CLOSE BIBLE-DATA-FILE
+           CLOSE BIBLE-DATA-META
            EXIT PROGRAM.
        SQLITETODATAFILE-EXIT.
 
        RUNBIBLETEXTFILE.
+           MOVE "N" TO WS-BIBLE-META-WRITTEN
            MOVE "N" TO WS-BIBLE-TEXT-EOF
-           OPEN INPUT BIBLE-TEXT-FILE
            PERFORM UNTIL WS-BIBLE-TEXT-EOF = "Y"
                READ BIBLE-TEXT-FILE
                    AT END
@@ -88,7 +122,6 @@
                    NOT AT END
                        PERFORM ROWBIBLETEXTFILE
            END-PERFORM
-           CLOSE BIBLE-TEXT-FILE
            CONTINUE.
        RUNBIBLETEXTFILE-EXIT.
 
@@ -101,8 +134,23 @@
                  WS-BIBLE-TEXT-CHAPTER,
                  WS-BIBLE-TEXT-VERSE,
                  WS-BIBLE-TEXT-TEXT
-           DISPLAY WS-BIBLE-TEXT-BOOK
-           DISPLAY WS-BIBLE-TEXT-CHAPTER
-           DISPLAY WS-BIBLE-TEXT-VERSE
+           IF WS-BIBLE-META-WRITTEN = "N"
+             MOVE "LANG" TO BIBLE-DATA-META-KEY
+             MOVE WS-BIBLE-TEXT-LANGUAGE TO BIBLE-DATA-META-VALUE
+             WRITE BIBLE-DATA-META-RECORD
+
+             MOVE "TRANSLATION" TO BIBLE-DATA-META-KEY
+             MOVE WS-BIBLE-TEXT-TRANSLATION TO BIBLE-DATA-META-VALUE
+             WRITE BIBLE-DATA-META-RECORD
+             
+             MOVE "Y" TO WS-BIBLE-META-WRITTEN
+           END-IF
+
+           MOVE WS-BIBLE-TEXT-BOOK TO BIBLE-DATA-BOOK
+           MOVE WS-BIBLE-TEXT-CHAPTER TO BIBLE-DATA-CHAPTER
+           MOVE WS-BIBLE-TEXT-VERSE TO BIBLE-DATA-VERSE
+           MOVE WS-BIBLE-TEXT-TEXT TO BIBLE-DATA-TEXT
+           WRITE BIBLE-DATA-RECORD.
+
            CONTINUE.
        ROWBIBLETEXTFILE-EXIT.

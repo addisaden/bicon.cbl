@@ -5,3 +5,5 @@
 *.pyo
 .venv
 *.dylib
+*.bible.meta
+*.bible.data
