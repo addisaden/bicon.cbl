@@ -39,7 +39,7 @@
                    WHEN WS-INPUT = 01
                        DISPLAY "NOT IMPLEMENTED YET"
                    WHEN WS-INPUT = 02
-                       DISPLAY "NOT IMPLEMENTED YET"
+                       CALL "lib/listTranslations"
                    WHEN WS-INPUT = 03
                        CALL "lib/importTranslation" USING
                          WS-SELECTED-LANGUAGE,
