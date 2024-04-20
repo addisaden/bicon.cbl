@@ -16,7 +16,7 @@
        01 WS-SELECTED-URL      PIC X(250).
        01 WS-SELECTED-FILENAME PIC X(100).
        PROCEDURE DIVISION.
-       SEARCHENGINE.
+      *SEARCHENGINE.
            CALL "SYSTEM" USING "clear"
            DISPLAY "Wie ist dein Name? " WITH NO ADVANCING.
            ACCEPT WS-USERNAME
@@ -52,6 +52,6 @@
                END-EVALUATE
            END-PERFORM
            CONTINUE.
-       SEARCHENGINE-EXIT.
+      *SEARCHENGINE-EXIT.
            STOP RUN.
 
