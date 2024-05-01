@@ -4,8 +4,9 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT BIBLE-DATA-META ASSIGN TO WS-META-FILE
-               ORGANIZATION IS LINE SEQUENTIAL
-               ACCESS MODE IS SEQUENTIAL.
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS SEQUENTIAL
+               RECORD KEY IS BIBLE-DATA-META-KEY.
            SELECT MetaList ASSIGN TO "bibles.meta"
                ORGANIZATION IS LINE SEQUENTIAL
                ACCESS MODE IS SEQUENTIAL.
@@ -39,8 +40,8 @@
                    AT END
                        MOVE 'Y' TO LIST-DATA-EOF
                    NOT AT END
-                       MOVE FUNCTION trim(MetaListRecord)
-                           TO WS-META-FILE
+                      MOVE FUNCTION trim(MetaListRecord)
+                          TO WS-META-FILE
                        PERFORM SHOW-META-RECORD
                END-READ
            END-PERFORM           
@@ -49,6 +50,7 @@
            EXIT PROGRAM.
 
        SHOW-META-RECORD.
+           DISPLAY " "
            OPEN INPUT BIBLE-DATA-META
       * EACH LINE
            PERFORM UNTIL META-RECORD-EOF = 'Y'
@@ -56,11 +58,15 @@
                   AT END
                        MOVE 'Y' TO META-RECORD-EOF
                   NOT AT END
-                       DISPLAY FUNCTION trim(BIBLE-DATA-META-KEY)
-                       DISPLAY FUNCTION trim(BIBLE-DATA-META-VALUE)
+                       DISPLAY FUNCTION concatenate(
+                           FUNCTION trim(BIBLE-DATA-META-KEY),
+                           ": ",
+                           FUNCTION trim(BIBLE-DATA-META-VALUE)
+                       )
                END-READ
            END-PERFORM
            CLOSE BIBLE-DATA-META
+           DISPLAY " "
 
            CONTINUE.
 
