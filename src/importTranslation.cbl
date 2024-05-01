@@ -141,7 +141,6 @@
            END-PERFORM
            CLOSE BIBLETRANSLATIONS
            CONTINUE.
-       RUNLISTTRANSLATIONS-EXIT.
 
        GETDATABASEPATH.
            OPEN INPUT MetaFile
@@ -160,4 +159,3 @@
            END-PERFORM
            CLOSE MetaFile
            CONTINUE.
-       GETDATABASEPATH-EXIT.

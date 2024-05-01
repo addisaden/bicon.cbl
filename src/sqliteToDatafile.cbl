@@ -69,20 +69,27 @@
              ".bible.data"
            ) TO WS-TRANSLATION-NAME-DATA
 
-           OPEN INPUT BIBLE-TEXT-FILE
-           IF NOT BIBLE-TEXT-EOF
-             DISPLAY "NO DOWNLOAD NEEDED"
-             CLOSE BIBLE-TEXT-FILE
-           ELSE
-             CLOSE BIBLE-TEXT-FILE
-             CALL "SYSTEM"
+      *    OPEN INPUT BIBLE-TEXT-FILE
+      *    IF NOT BIBLE-TEXT-EOF
+      *      DISPLAY "NO DOWNLOAD NEEDED"
+      *      CLOSE BIBLE-TEXT-FILE
+      *    ELSE
+      *      CLOSE BIBLE-TEXT-FILE
+      *      CALL "SYSTEM"
+      *        USING FUNCTION concatenate(
+      *            "python scripts/mysword.py -p ",
+      *            SQLITE-DB-FILEPATH,
+      *            " > ",
+      *            WS-TRANSLATION-NAME-TXT
+      *      )
+      *    END-IF
+           CALL "SYSTEM"
                USING FUNCTION concatenate(
-                   "python scripts/mysword.py -p ",
-                   SQLITE-DB-FILEPATH,
-                   " > ",
-                   WS-TRANSLATION-NAME-TXT
-             )
-           END-IF
+                 "python scripts/mysword.py -p ",
+                 SQLITE-DB-FILEPATH,
+                 " > ",
+                 WS-TRANSLATION-NAME-TXT
+           )
 
            OPEN OUTPUT BIBLE-DATA-META
            OPEN OUTPUT BIBLE-DATA-FILE
