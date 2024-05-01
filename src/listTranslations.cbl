@@ -3,7 +3,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT MetaFile ASSIGN TO WS-META-FILE
+           SELECT BIBLE-DATA-META ASSIGN TO WS-META-FILE
                ORGANIZATION IS LINE SEQUENTIAL
                ACCESS MODE IS SEQUENTIAL.
            SELECT MetaList ASSIGN TO "bibles.meta"
@@ -11,14 +11,16 @@
                ACCESS MODE IS SEQUENTIAL.
        DATA DIVISION.
        FILE SECTION.
-       FD MetaFile.
-       01 MetaFileRecord PIC X(777).
-       01 META-DATA-EOF  PIC X VALUE 'N'.
+       FD BIBLE-DATA-META.
+       01 BIBLE-DATA-META-RECORD.
+           05 BIBLE-DATA-META-KEY    PIC X(12).
+           05 BIBLE-DATA-META-VALUE  PIC X(250).
        FD MetaList.
        01 MetaListRecord PIC X(777).
-       01 LIST-DATA-EOF  PIC X VALUE 'N'.
        WORKING-STORAGE SECTION.
        01 WS-META-FILE    PIC X(100).
+       01 LIST-DATA-EOF  PIC X VALUE 'N'.
+       01 META-RECORD-EOF PIC X VALUE 'N'.
        LINKAGE SECTION.
        PROCEDURE DIVISION.
       *
@@ -37,9 +39,28 @@
                    AT END
                        MOVE 'Y' TO LIST-DATA-EOF
                    NOT AT END
-                       DISPLAY FUNCTION trim(MetaListRecord)
+                       MOVE FUNCTION trim(MetaListRecord)
+                           TO WS-META-FILE
+                       PERFORM SHOW-META-RECORD
                END-READ
            END-PERFORM           
            CLOSE MetaList
 
            EXIT PROGRAM.
+
+       SHOW-META-RECORD.
+           OPEN INPUT BIBLE-DATA-META
+      * EACH LINE
+           PERFORM UNTIL META-RECORD-EOF = 'Y'
+               READ BIBLE-DATA-META
+                  AT END
+                       MOVE 'Y' TO META-RECORD-EOF
+                  NOT AT END
+                       DISPLAY FUNCTION trim(BIBLE-DATA-META-KEY)
+                       DISPLAY FUNCTION trim(BIBLE-DATA-META-VALUE)
+               END-READ
+           END-PERFORM
+           CLOSE BIBLE-DATA-META
+
+           CONTINUE.
+
