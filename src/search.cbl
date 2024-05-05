@@ -36,7 +36,7 @@
                          WS-SELECTED-LANGUAGE,
                          WS-SELECTED-TITLE,
                          WS-SELECTED-URL,
-                         WS-SELECTED-FILENAME,
+                         WS-SELECTED-FILENAME
                    WHEN TRUE
                        DISPLAY "??"
                        DISPLAY WS-INPUT
