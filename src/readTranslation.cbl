@@ -54,6 +54,20 @@
 
            CLOSE BIBLE-DATA-META.
 
+           OPEN i-o BIBLE-DATA-FILE.
+
+           DISPLAY "book"
+           ACCEPT BIBLE-DATA-BOOK
+
+           DISPLAY "chapter"
+           ACCEPT BIBLE-DATA-CHAPTER
+
+           MOVE 1 TO BIBLE-DATA-VERSE
+           READ BIBLE-DATA-FILE END-READ
+           DISPLAY FUNCTION trim(BIBLE-DATA-TEXT)
+
+           CLOSE BIBLE-DATA-FILE.
+
            EXIT PROGRAM.
 
        testfile.
