@@ -16,21 +16,9 @@
              RECORD KEY IS BIBLE-DATA-ID.
        DATA DIVISION.
        FILE SECTION.
-       FD BIBLE-TEXT-FILE.
-       01 BIBLE-TEXT-RECORD         PIC X(777).
-           88 BIBLE-TEXT-EOF        VALUE HIGH-VALUE.
-       FD BIBLE-DATA-META.
-       01 BIBLE-DATA-META-RECORD.
-           05 BIBLE-DATA-META-KEY    PIC X(12).
-           05 BIBLE-DATA-META-VALUE  PIC X(250).
-       FD BIBLE-DATA-FILE.
-       01 BIBLE-DATA-RECORD.
-           05 BIBLE-DATA-ID.
-               10 BIBLE-DATA-BOOK    PIC 9(3).
-               10 BIBLE-DATA-CHAPTER PIC 9(3).
-               10 BIBLE-DATA-VERSE   PIC 9(3).
-           05 BIBLE-DATA-TEXT        PIC X(500).
-           88 BIBLE-DATA-EOF         VALUE HIGH-VALUE.
+           COPY 'cpy/file-section/bible-text-file'.
+           COPY 'cpy/file-section/bible-data-meta'.
+           COPY 'cpy/file-section/bible-data-file'.
        WORKING-STORAGE SECTION.
        01 WS-BIBLE-META-WRITTEN     PIC X VALUE "N".
        01 WS-TRANSLATION-NAME       PIC X(250).

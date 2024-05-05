@@ -12,10 +12,7 @@
                ACCESS MODE IS SEQUENTIAL.
        DATA DIVISION.
        FILE SECTION.
-       FD BIBLE-DATA-META.
-       01 BIBLE-DATA-META-RECORD.
-           05 BIBLE-DATA-META-KEY    PIC X(12).
-           05 BIBLE-DATA-META-VALUE  PIC X(250).
+           COPY 'cpy/file-section/bible-data-meta'.
        FD MetaList.
        01 MetaListRecord PIC X(777).
        WORKING-STORAGE SECTION.
