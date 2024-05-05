@@ -56,15 +56,22 @@
 
            OPEN i-o BIBLE-DATA-FILE.
 
-           DISPLAY "book"
-           ACCEPT BIBLE-DATA-BOOK
-
-           DISPLAY "chapter"
-           ACCEPT BIBLE-DATA-CHAPTER
+           PERFORM choose-book-and-chapter
 
            MOVE 1 TO BIBLE-DATA-VERSE
-           READ BIBLE-DATA-FILE END-READ
-           DISPLAY FUNCTION trim(BIBLE-DATA-TEXT)
+           MOVE 0 TO WS-RETURN
+           PERFORM UNTIL WS-RETURN = 1
+               READ BIBLE-DATA-FILE
+                   INVALID KEY
+                       MOVE 1 TO WS-RETURN
+                   NOT INVALID KEY
+                       DISPLAY FUNCTION concatenate(
+                           BIBLE-DATA-VERSE, ": ",
+                           FUNCTION trim(BIBLE-DATA-TEXT),
+                       )
+                       ADD 1 TO BIBLE-DATA-VERSE
+               END-READ
+           END-PERFORM
 
            CLOSE BIBLE-DATA-FILE.
 
@@ -87,6 +94,16 @@
 
            CONTINUE.
        testfile-exit.
+
+       choose-book-and-chapter.
+           DISPLAY "book"
+           ACCEPT BIBLE-DATA-BOOK
+
+           DISPLAY "chapter"
+           ACCEPT BIBLE-DATA-CHAPTER
+
+           CONTINUE.
+       choose-book-and-chapter-exit.
 
            END PROGRAM readTranslation.
 
