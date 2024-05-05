@@ -177,3 +177,4 @@
 
            CONTINUE.
        ROWBIBLETEXTFILE-EXIT.
+           END PROGRAM sqliteToDatafile.

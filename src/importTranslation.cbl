@@ -84,7 +84,7 @@
            PERFORM GETDATABASEPATH
            DISPLAY "DATABASE-PATH: " WS-DATABASE-PATH
 
-           CALL "lib/sqliteToDatafile"
+           CALL "sqliteToDatafile"
              USING WS-SELECTED-FILENAME, WS-DATABASE-PATH,
              WS-SELECTED-TITLE.
 
@@ -160,3 +160,4 @@
            END-PERFORM
            CLOSE MetaFile
            CONTINUE.
+           END PROGRAM importTranslation.

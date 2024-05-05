@@ -70,3 +70,4 @@
 
            CONTINUE.
 
+           END PROGRAM listTranslations.
