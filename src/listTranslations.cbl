@@ -28,13 +28,12 @@
       * Search for all files *.bible.meta
       * list the code, language and title
       *
-           DISPLAY "Searching for bibles (Not implemented)"
-
            CALL "system"
                USING "ls *.bible.meta > bibles.meta"
            END-CALL
 
            OPEN INPUT MetaList
+           MOVE "N" TO LIST-DATA-EOF
            PERFORM UNTIL LIST-DATA-EOF = 'Y'
                READ MetaList
                    AT END
@@ -53,6 +52,7 @@
            DISPLAY " "
            OPEN INPUT BIBLE-DATA-META
       * EACH LINE
+           MOVE "N" TO META-RECORD-EOF
            PERFORM UNTIL META-RECORD-EOF = 'Y'
                READ BIBLE-DATA-META
                   AT END
