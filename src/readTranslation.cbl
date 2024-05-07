@@ -21,7 +21,14 @@
        01 WS-TEST-FILE          PIC X(777).
        01 WS-BIBLE-SHORT        PIC X(32).
        01 WS-RETURN             PIC 99.
-       LINKAGE SECTION.
+       SCREEN SECTION.
+       01 SCREEN-SELECT-CHAPTER.
+           03 "SELECT BOOK AND CHAPTER" PIC X(24) LINE 3 COL 2.
+           03 "BOOK" PIC X(7) LINE 5 COL 3.
+           03 USING BIBLE-DATA-BOOK PIC 9(3) LINE 5 COL 20.
+           03 "CHAPTER" PIC X(7) LINE 7 COL 3.
+           03 USING BIBLE-DATA-CHAPTER PIC 9(3) LINE 7 COL 20.
+      *LINKAGE SECTION.
        PROCEDURE DIVISION.
            DISPLAY "bible short? " END-DISPLAY
            ACCEPT WS-BIBLE-SHORT
@@ -96,11 +103,13 @@
        testfile-exit.
 
        choose-book-and-chapter.
-           DISPLAY "book"
-           ACCEPT BIBLE-DATA-BOOK
+      *    DISPLAY "book"
+      *    ACCEPT BIBLE-DATA-BOOK
 
-           DISPLAY "chapter"
-           ACCEPT BIBLE-DATA-CHAPTER
+      *    DISPLAY "chapter"
+      *    ACCEPT BIBLE-DATA-CHAPTER
+           DISPLAY SCREEN-SELECT-CHAPTER.
+           ACCEPT SCREEN-SELECT-CHAPTER.
 
            CONTINUE.
        choose-book-and-chapter-exit.
