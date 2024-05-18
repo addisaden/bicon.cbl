@@ -96,6 +96,31 @@
        testfile-exit.
 
        choose-book-and-chapter.
+           DISPLAY "OT"
+           DISPLAY " 1 genesis        2 exodus          3 leviticus"
+           DISPLAY " 4 numbers        5 deuteronomy     6 joshua"
+           DISPLAY " 7 judges         8 ruth            9 i_samuel"
+           DISPLAY "10 ii_samuel     11 i_kings        12 ii_kings"
+           DISPLAY "13 i_chronicles  14 ii_chronicles  15 ezra"
+           DISPLAY "16 nehemiah      17 esther         18 job"
+           DISPLAY "19 psalms        20 proverbs       21 ecclesiastes"
+           DISPLAY "22 song solomon  23 isaiah         24 jeremiah"
+           DISPLAY "25 lamentations  26 ezekiel        27 daniel"
+           DISPLAY "28 hosea         29 joel           30 amos"
+           DISPLAY "31 obadiah       32 jonah          33 micah"
+           DISPLAY "34 nahum         35 habakkuk       36 zephaniah"
+           DISPLAY "37 haggai        38 zechariah      39 malachi"
+           DISPLAY "NT"
+           DISPLAY "40 matthew       41 mark           42 luke"
+           DISPLAY "43 john          44 acts           45 romans"
+           DISPLAY "46 i_corinthians 47 ii_corinthians 48 galatians"
+           DISPLAY "49 ephesians     50 philippians    51 colossians"
+           DISPLAY "52 i_thess       53 ii_thess       54 i_timothy"
+           DISPLAY "55 ii_timothy    56 titus          57 philemon"
+           DISPLAY "58 hebrews       59 james          60 i_peter"
+           DISPLAY "61 ii_peter      62 i_john         63 ii_john"
+           DISPLAY "64 iii_john      65 jude           66 revelation"
+
            DISPLAY "book"
            ACCEPT BIBLE-DATA-BOOK
 
