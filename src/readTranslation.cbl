@@ -69,6 +69,10 @@
                            BIBLE-DATA-VERSE, ": ",
                            FUNCTION trim(BIBLE-DATA-TEXT),
                        )
+                       IF FUNCTION MOD(BIBLE-DATA-VERSE, 15) = 14 THEN
+                           DISPLAY "<ENTER NEXT PAGE>" WITH NO ADVANCING
+                           ACCEPT WS-RETURN
+                       END-IF
                        ADD 1 TO BIBLE-DATA-VERSE
                END-READ
            END-PERFORM
