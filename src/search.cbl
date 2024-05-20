@@ -22,6 +22,9 @@
                DISPLAY " 1: Durchsuche die Bibel"
                DISPLAY " 2: Liste der verfügbaren Bibelübersetzungen"
                DISPLAY " 3: Importiere eine Bibelübersetzung"
+               DISPLAY SPACE
+               DISPLAY " 4: Erstelle Wortliste (Tokenizer)"
+               DISPLAY SPACE
                DISPLAY "77: Beenden"
                DISPLAY SPACE
                DISPLAY ": " WITH NO ADVANCING
@@ -37,6 +40,8 @@
                          WS-SELECTED-TITLE,
                          WS-SELECTED-URL,
                          WS-SELECTED-FILENAME
+                   WHEN WS-INPUT = 04
+                       CALL "createWordlist"
                    WHEN TRUE
                        DISPLAY "??"
                        DISPLAY WS-INPUT
@@ -52,3 +57,5 @@
            COPY 'src/listTranslations'.
            COPY 'src/importTranslation'.
            COPY 'src/sqliteToDatafile'.
+
+           COPY 'src/createWordlist.cbl'.

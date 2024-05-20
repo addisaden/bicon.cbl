@@ -19,9 +19,27 @@
        01 WS-BIBLE-DATA-FILE    PIC X(42).
        01 WS-BIBLE-SHORT        PIC X(32).
        PROCEDURE DIVISION.
-       EXIT PROGRAM.
            DISPLAY "Create a new wordlist."
+
       * Get Wordlist name
+           DISPLAY "Name: " WITH NO ADVANCING.
+
+           ACCEPT WS-WORDLIST-NAME.
+
+           MOVE function concatenate(
+           function trim(WS-WORDLIST-NAME),
+           ".words.meta"
+           ) TO WS-WORDLIST-META.
+           DISPLAY "Meta: " WITH NO ADVANCING.
+           DISPLAY WS-WORDLIST-META.
+
+           MOVE function concatenate(
+           function trim(WS-WORDLIST-NAME),
+           ".words.data"
+           ) TO WS-WORDLIST-FILE.
+           DISPLAY "Data: " WITH NO ADVANCING.
+           DISPLAY WS-WORDLIST-FILE.
+
       * check if wordlist exists and ask if it should be recreated
       * choose tokensplitter
       * loop #bibleshort#
@@ -31,4 +49,5 @@
       * -- search them in the file
       * -- -- if exists: count +1
       * -- -- else: create new entry
+       EXIT PROGRAM.
        END PROGRAM createWordlist.
