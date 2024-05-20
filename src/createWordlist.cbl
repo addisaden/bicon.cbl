@@ -18,10 +18,22 @@
        01 WS-WORDLIST-LASTINDEX PIC 9(7).
        01 WS-BIBLE-DATA-FILE    PIC X(42).
        01 WS-BIBLE-SHORT        PIC X(32).
+       01 WS-RETURN             PIC 9(3).
        PROCEDURE DIVISION.
            DISPLAY "Create a new wordlist."
-
       * Get Wordlist name
+           PERFORM select-file
+      * choose tokensplitter
+      * loop #bibleshort#
+      * -- ask for bibleshort name
+      * -- open file (read sequentialle)
+      * -- split words with chosen tokensplitter
+      * -- search them in the file
+      * -- -- if exists: count +1
+      * -- -- else: create new entry
+       EXIT PROGRAM.
+
+       select-file.
            DISPLAY "Name: " WITH NO ADVANCING.
 
            ACCEPT WS-WORDLIST-NAME.
@@ -41,13 +53,21 @@
            DISPLAY WS-WORDLIST-FILE.
 
       * check if wordlist exists and ask if it should be recreated
-      * choose tokensplitter
-      * loop #bibleshort#
-      * -- ask for bibleshort name
-      * -- open file (read sequentialle)
-      * -- split words with chosen tokensplitter
-      * -- search them in the file
-      * -- -- if exists: count +1
-      * -- -- else: create new entry
-       EXIT PROGRAM.
+           CALL "SYSTEM"
+           USING function concatenate("file -E ", WS-WORDLIST-FILE)
+           GIVING WS-RETURN
+           END-CALL
+           IF WS-RETURN = 0
+               DISPLAY SPACE
+               DISPLAY "File EXISTS."
+               DISPLAY "Overwrite?"
+               DISPLAY "1: yes, 2: no. choose: " WITH NO ADVANCING
+               ACCEPT WS-RETURN
+               IF WS-RETURN not = 1
+                   DISPLAY "Choose another name."
+                   GO TO select-file
+               END-IF
+           END-IF
+           CONTINUE.
+       select-file-exit.
        END PROGRAM createWordlist.

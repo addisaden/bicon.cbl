@@ -9,3 +9,5 @@
 *.bible.data
 bibles.meta
 *.swp
+*.words.data
+*.words.meta
