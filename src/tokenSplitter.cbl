@@ -36,7 +36,10 @@
            TEXT-OFFSET,
            TEXT-CONTENT.
            DISPLAY OPERATION-MODE.
-           DISPLAY WORDLIST-NAME.
-           DISPLAY TEXTSPLIT-NAME.
+           DISPLAY FUNCTION trim(WORDLIST-NAME).
+           DISPLAY FUNCTION trim(TEXTSPLIT-NAME).
+           DISPLAY TEXT-LENGTH.
+           DISPLAY TEXT-OFFSET.
+           DISPLAY FUNCTION trim(TEXT-CONTENT).
            EXIT PROGRAM.
            END PROGRAM tokenSplitter.

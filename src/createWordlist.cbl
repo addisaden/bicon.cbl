@@ -13,12 +13,14 @@
            COPY 'cpy/file-section/bible-data-file'.
        WORKING-STORAGE SECTION.
        01 WS-WORDLIST-NAME      PIC X(32).
+       01 WS-TEXTSPLIT-NAME     PIC X(32).
        01 WS-WORDLIST-META      PIC X(42).
        01 WS-WORDLIST-FILE      PIC X(42).
        01 WS-WORDLIST-LASTINDEX PIC 9(7).
        01 WS-BIBLE-DATA-FILE    PIC X(42).
        01 WS-BIBLE-SHORT        PIC X(32).
        01 WS-RETURN             PIC 9(3).
+       01 WS-TEXT               PIC X(1000000).
        PROCEDURE DIVISION.
            DISPLAY "Create a new wordlist."
       * Get Wordlist name
@@ -31,9 +33,11 @@
       * -- search them in the file
       * -- -- if exists: count +1
       * -- -- else: create new entry
+           MOVE "TEST Textsplit" TO WS-TEXTSPLIT-NAME.
+           MOVE "Hallo Welt" TO WS-TEXT.
            CALL "tokenSplitter" USING
-             "CWLO ", WS-WORDLIST-NAME, "TSTEST",
-             10, 0, "hallo welt" END-CALL
+             "CWLO ", WS-WORDLIST-NAME, WS-TEXTSPLIT-NAME,
+             10, 0, WS-TEXT END-CALL
            EXIT PROGRAM.
 
        selectfile.
