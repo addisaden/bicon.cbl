@@ -58,4 +58,8 @@
            COPY 'src/importTranslation'.
            COPY 'src/sqliteToDatafile'.
 
-           COPY 'src/createWordlist.cbl'.
+           COPY 'src/createWordlist'.
+           COPY 'src/tokenSplitter'
+             REPLACING MAX-TEXT-CONTENT
+             BY 1000000.
+

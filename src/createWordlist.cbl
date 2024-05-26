@@ -22,7 +22,7 @@
        PROCEDURE DIVISION.
            DISPLAY "Create a new wordlist."
       * Get Wordlist name
-           PERFORM select-file
+           PERFORM selectfile
       * choose tokensplitter
       * loop #bibleshort#
       * -- ask for bibleshort name
@@ -31,9 +31,12 @@
       * -- search them in the file
       * -- -- if exists: count +1
       * -- -- else: create new entry
-       EXIT PROGRAM.
+           CALL "tokenSplitter" USING
+             "CWLO ", WS-WORDLIST-NAME, "TSTEST",
+             10, 0, "hallo welt" END-CALL
+           EXIT PROGRAM.
 
-       select-file.
+       selectfile.
            DISPLAY "Name: " WITH NO ADVANCING.
 
            ACCEPT WS-WORDLIST-NAME.
@@ -65,9 +68,9 @@
                ACCEPT WS-RETURN
                IF WS-RETURN not = 1
                    DISPLAY "Choose another name."
-                   GO TO select-file
+                   GO TO selectfile
                END-IF
            END-IF
            CONTINUE.
-       select-file-exit.
+       selectfile-exit.
        END PROGRAM createWordlist.
