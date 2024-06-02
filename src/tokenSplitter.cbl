@@ -22,7 +22,7 @@
       *         Textsplit             *
       * CTSO  - Create Textsplit only *
       *********************************
-       01 OPERATION-MODE          PIC XXXXX.
+       01 OPERATION-MODE          PIC X(5).
        01 WORDLIST-NAME           PIC X(32).
        01 TEXTSPLIT-NAME          PIC X(32).
        01 TEXT-LENGTH             PIC 9(12).
