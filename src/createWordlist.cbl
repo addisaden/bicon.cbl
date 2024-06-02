@@ -17,8 +17,8 @@
        01 WS-TEXT               PIC X(1000000).
        01 WS-TEXT-LENGTH        PIC 9(12).
        01 WS-TEXT-OFFSET        PIC 9(12).
-       01 WS-WORDLIST-META      PIC X(42).
-       01 WS-WORDLIST-FILE      PIC X(42).
+       01 WS-WORDLIST-META      PIC X(43).
+       01 WS-WORDLIST-FILE      PIC X(43).
        01 WS-WORDLIST-LASTINDEX PIC 9(7).
        01 WS-BIBLE-DATA-FILE    PIC X(42).
        01 WS-BIBLE-SHORT        PIC X(32).
@@ -36,8 +36,12 @@
       * -- -- if exists: count +1
       * -- -- else: create new entry
            MOVE "TEST Textsplit" TO WS-TEXTSPLIT-NAME.
-           MOVE "Hallo Welt" TO WS-TEXT.
-           MOVE 10 TO WS-TEXT-LENGTH.
+      *    MOVE "Hallo Welt, dies ist ein Test!" TO WS-TEXT.
+           DISPLAY "Enter text:"
+           ACCEPT WS-TEXT.
+           MOVE
+               function length(function trim(WS-TEXT))
+               TO WS-TEXT-LENGTH.
            MOVE 0 TO WS-TEXT-OFFSET.
            CALL "tokenSplitter" USING
              "CWLO ", WS-WORDLIST-NAME, WS-TEXTSPLIT-NAME,

@@ -11,6 +11,8 @@
       * definition of files
        WORKING-STORAGE SECTION.
       * internal variables
+       01 WS-WORDLIST-META      PIC X(43).
+       01 WS-WORDLIST-FILE      PIC X(43).
        LINKAGE SECTION.
       * external variables
       *
@@ -35,11 +37,31 @@
            TEXT-LENGTH,
            TEXT-OFFSET,
            TEXT-CONTENT.
+           PERFORM FILLFILENAMES.
            DISPLAY OPERATION-MODE.
-           DISPLAY FUNCTION trim(WORDLIST-NAME).
+           DISPLAY FUNCTION trim(WS-WORDLIST-META).
+           DISPLAY FUNCTION trim(WS-WORDLIST-FILE).
            DISPLAY FUNCTION trim(TEXTSPLIT-NAME).
            DISPLAY TEXT-LENGTH.
            DISPLAY TEXT-OFFSET.
            DISPLAY FUNCTION trim(TEXT-CONTENT).
            EXIT PROGRAM.
+       
+       FILLFILENAMES.
+           MOVE
+               function concatenate(
+                   function trim(WORDLIST-NAME),
+                   ".words.meta"
+               )
+               TO WS-WORDLIST-META
+
+           MOVE
+               function concatenate(
+                   function trim(WORDLIST-NAME),
+                   ".words.data"
+               )
+               TO WS-WORDLIST-FILE
+           CONTINUE.
+       FILLFILENAMES-EXIT.
+
            END PROGRAM tokenSplitter.
