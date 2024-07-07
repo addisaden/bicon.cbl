@@ -1,4 +1,0 @@
-       FD PREFIX-META.
-       01 PREFIX-META-RECORD.
-           05 PREFIX-META-KEY    PIC X(12).
-           05 PREFIX-META-VALUE  PIC X(250).

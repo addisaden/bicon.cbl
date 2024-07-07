@@ -4,18 +4,31 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
       * wordlist.data random
+           SELECT WORDLIST-FILE ASSIGN TO WS-WORDLIST-FILE
+             ORGANIZATION IS INDEXED
+             ACCESS MODE IS RANDOM
+             RECORD KEY IS WORDLIST-WORD.
       * wordlist.meta random
+           SELECT WORDLIST-META-FILE ASSIGN TO WS-WORDLIST-META
+             ORGANIZATION IS INDEXED
+             ACCESS MODE IS RANDOM
+             RECORD KEY IS WORDLIST-META-KEY.
       * textsplit     random
        DATA DIVISION.
        FILE SECTION.
       * definition of files
+       COPY 'cpy/file-section/wordlist-meta'.
+       COPY 'cpy/file-section/wordlist-file'.
        WORKING-STORAGE SECTION.
       * internal variables
        01 WS-WORDLIST-META      PIC X(43).
+       01 WS-WORDLIST-META-LAST-INDEX PIC X(250).
+       01 WS-WORDLIST-META-WORDS PIC X(250).
        01 WS-WORDLIST-FILE      PIC X(43).
        01 WS-POSITION           PIC 9(12) VALUE 1.
        01 WS-WORD-START         PIC 9(12) VALUE 1.
        01 WS-WORD-END           PIC 9(12) VALUE 1.
+       01 WS-WORDLIST-INDEX     PIC 9(7) VALUE 1.
        01 WS-CHAR               PIC X.
        01 WS-WORD-STATUS        PIC 9.
        01 WS-CALC               PIC 9(12).
@@ -31,9 +44,9 @@
       * CTSO  - Create Textsplit only *
       *********************************
        01 OPERATION-MODE          PIC X(5).
-         88 OM-ONLY-WORDLIST      VALUE "CWLO".
+         88 OM-ONLY-WORDLIST      VALUE "CWLO ".
          88 OM-WORDLIST-TEXTSPLIT VALUE "CWLTS".
-         88 OM-ONLY-TEXTSPLIT     VALUE "CTSO".
+         88 OM-ONLY-TEXTSPLIT     VALUE "CTSO ".
        01 WORDLIST-NAME           PIC X(32).
        01 TEXTSPLIT-NAME          PIC X(32).
        01 TEXT-LENGTH             PIC 9(12).
@@ -137,7 +150,7 @@
            DISPLAY WS-WORD-END
            DISPLAY TEXT-CONTENT(WS-WORD-START:WS-CALC)
 
-           PERFORM WRITE-TO-WORDLIST
+           PERFORM PROCESS-WRITE-TO-WORDLIST
 
            MOVE WS-POSITION TO WS-WORD-START
            MOVE WS-POSITION TO WS-WORD-END
@@ -156,26 +169,55 @@
       *********************************
        
        SUB-OPEN-WORDLIST.
-           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+           DISPLAY "START OPEN FILES"
+           if not OM-ONLY-WORDLIST and not OM-WORDLIST-TEXTSPLIT
                EXIT PARAGRAPH
            end-if
-           OPEN OUTPUT WORDLIST-FILE
-           OPEN OUTPUT WORDLIST-META
+           DISPLAY "OPEN FILES"
+      * CRASHES HERE
+      * MUST CREATE FILES FIRST IF THEY DO NOT EXISTS.
+           OPEN i-o WORDLIST-FILE
+           OPEN i-o WORDLIST-META-FILE
+      * read the last index if it exists else set it to 1
+           MOVE "LAST-INDEX" TO WORDLIST-META-KEY
+           READ WORDLIST-META-FILE
+             INVALID KEY
+               MOVE 1 TO WS-WORDLIST-META-LAST-INDEX
+             NOT INVALID KEY
+               MOVE WORDLIST-META-VALUE TO WS-WORDLIST-META-LAST-INDEX
+           END-READ
+      * read WS-WORDLIST-META-WORDS from WORDLIST-META
+           MOVE "WORDS" TO WORDLIST-META-KEY
+           READ WORDLIST-META-FILE
+             INVALID KEY
+               MOVE 0 TO WS-WORDLIST-META-WORDS
+             NOT INVALID KEY
+               MOVE WORDLIST-META-VALUE TO WS-WORDLIST-META-WORDS
+           END-READ
            EXIT PARAGRAPH.
        SUB-OPEN-WORDLIST-EXIT.
 
        SUB-CLOSE-WORDLIST.
-           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+           if not OM-ONLY-WORDLIST and not OM-WORDLIST-TEXTSPLIT
                EXIT PARAGRAPH
            end-if
+      * write the last index to WORDLIST-META
+           MOVE "LAST-INDEX" TO WORDLIST-META-KEY
+           MOVE WS-WORDLIST-META-LAST-INDEX TO WORDLIST-META-VALUE
+           WRITE WORDLIST-META-RECORD
+      * write WS-WORDLIST-META-WORDS to WORDLIST-META
+           MOVE "WORDS" TO WORDLIST-META-KEY
+           MOVE WS-WORDLIST-META-WORDS TO WORDLIST-META-VALUE
+           WRITE WORDLIST-META-RECORD
+
            CLOSE WORDLIST-FILE
-           CLOSE WORDLIST-META
+           CLOSE WORDLIST-META-FILE
            EXIT PARAGRAPH.
        SUB-CLOSE-WORDLIST-EXIT.
 
        PROCESS-WRITE-TO-WORDLIST.
            DISPLAY "WRITE TO WORDLIST"
-           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+           if not OM-ONLY-WORDLIST and not OM-WORDLIST-TEXTSPLIT
                EXIT PARAGRAPH
            end-if
       * TODOS:
@@ -183,6 +225,7 @@
       * - define the meta format
       * - write the wordlist
       * - write the meta
+           EXIT PARAGRAPH.
        PROCESS-WRITE-TO-WORDLIST-EXIT.
 
            END PROGRAM tokenSplitter.
