@@ -31,6 +31,9 @@
       * CTSO  - Create Textsplit only *
       *********************************
        01 OPERATION-MODE          PIC X(5).
+         88 OM-ONLY-WORDLIST      VALUE "CWLO".
+         88 OM-WORDLIST-TEXTSPLIT VALUE "CWLTS".
+         88 OM-ONLY-TEXTSPLIT     VALUE "CTSO".
        01 WORDLIST-NAME           PIC X(32).
        01 TEXTSPLIT-NAME          PIC X(32).
        01 TEXT-LENGTH             PIC 9(12).
@@ -44,6 +47,7 @@
            TEXT-OFFSET,
            TEXT-CONTENT.
            PERFORM FILLFILENAMES.
+           PERFORM SUB-OPEN-WORDLIST.
            DISPLAY OPERATION-MODE.
            DISPLAY FUNCTION trim(WS-WORDLIST-META).
            DISPLAY FUNCTION trim(WS-WORDLIST-FILE).
@@ -52,6 +56,7 @@
            DISPLAY TEXT-OFFSET.
            DISPLAY FUNCTION trim(TEXT-CONTENT).
            PERFORM RUNWORDS.
+           PERFORM SUB-CLOSE-WORDLIST.
            EXIT PROGRAM.
        
        RUNWORDS.
@@ -84,6 +89,10 @@
        FILLFILENAMES-EXIT.
 
        FIND-WORD.
+      * WS-WORD-STATUS
+      * W - Word
+      * S - Space
+      * X - End of text
            IF WS-POSITION = 0
                MOVE "W" TO WS-WORD-STATUS
            END-IF
@@ -128,10 +137,52 @@
            DISPLAY WS-WORD-END
            DISPLAY TEXT-CONTENT(WS-WORD-START:WS-CALC)
 
+           PERFORM WRITE-TO-WORDLIST
+
            MOVE WS-POSITION TO WS-WORD-START
            MOVE WS-POSITION TO WS-WORD-END
 
            EXIT PARAGRAPH.
        PROCESS-WORD-EXIT.
+
+      * WRITE TO WORDLIST
+      *********************************
+      * OPERATINO-MODE's:             *
+      *                               *
+      * CWLO  - Create Wordlist only  *
+      * CWLTS - Create Wordlist and   *
+      *         Textsplit             *
+      * CTSO  - Create Textsplit only *
+      *********************************
+       
+       SUB-OPEN-WORDLIST.
+           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+               EXIT PARAGRAPH
+           end-if
+           OPEN OUTPUT WORDLIST-FILE
+           OPEN OUTPUT WORDLIST-META
+           EXIT PARAGRAPH.
+       SUB-OPEN-WORDLIST-EXIT.
+
+       SUB-CLOSE-WORDLIST.
+           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+               EXIT PARAGRAPH
+           end-if
+           CLOSE WORDLIST-FILE
+           CLOSE WORDLIST-META
+           EXIT PARAGRAPH.
+       SUB-CLOSE-WORDLIST-EXIT.
+
+       PROCESS-WRITE-TO-WORDLIST.
+           DISPLAY "WRITE TO WORDLIST"
+           if not OM-ONLY-WORDLIST or not OM-WORDLIST-TEXTSPLIT
+               EXIT PARAGRAPH
+           end-if
+      * TODOS:
+      * - define the wordlist format
+      * - define the meta format
+      * - write the wordlist
+      * - write the meta
+       PROCESS-WRITE-TO-WORDLIST-EXIT.
 
            END PROGRAM tokenSplitter.
